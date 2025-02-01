@@ -7,30 +7,32 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background-color: #0d1117;
             color: white;
             text-align: center;
             transition: background 0.3s, color 0.3s;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 20px;
-            background: #1e1e1e;
-            border-radius: 10px;
+            background: #161b22;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: background 0.3s;
         }
         .toggle-theme {
             margin: 10px;
-            padding: 10px;
-            background: gray;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            color: white;
+            font-weight: bold;
+            color: #161b22;
         }
         .light {
             background-color: white;
@@ -42,18 +44,24 @@
         .crypto-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             padding: 10px;
         }
         .crypto-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: #2a2a2a;
-            border-radius: 5px;
+            padding: 15px;
+            background: #21262d;
+            border-radius: 10px;
             transition: background 0.3s;
             color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .crypto-item img {
+            width: 40px;
+            height: 40px;
         }
         .light .crypto-item {
             background: #ddd;
@@ -76,8 +84,7 @@
         async function fetchCryptoData() {
             const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
             const data = await response.json();
-            const filteredData = data.filter(coin => ['bitcoin', 'ethereum', 'toncoin'].includes(coin.id));
-            return filteredData.map(coin => ({ 
+            return data.map(coin => ({ 
                 name: coin.name, 
                 price: coin.current_price, 
                 logo: coin.image, 
@@ -90,7 +97,7 @@
             const list = document.getElementById('cryptoList');
             list.innerHTML = cryptoData.map(coin => `
                 <a href="${coin.link}" target="_blank" class="crypto-item">
-                    <img src="${coin.logo}" width="30" height="30" alt="${coin.name}">
+                    <img src="${coin.logo}" alt="${coin.name}">
                     <span>${coin.name}</span>
                     <span>${coin.price} USD</span>
                 </a>
