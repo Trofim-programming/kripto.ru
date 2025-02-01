@@ -71,16 +71,30 @@
             text-decoration: none;
             color: white;
         }
+        .search-bar {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
 <body>
     <button class="toggle-theme" onclick="toggleTheme()">Сменить тему</button>
+    <input type="text" class="search-bar" id="search" placeholder="Поиск криптовалют..." oninput="filterCryptos()">
     <div class="container">
         <h1>Курс криптовалют</h1>
         <div class="crypto-list" id="cryptoList"></div>
     </div>
 
     <script>
+        let cryptoData = [];
+
         async function fetchCryptoData() {
             const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
             const data = await response.json();
@@ -93,9 +107,24 @@
         }
 
         async function renderCryptoList() {
-            const cryptoData = await fetchCryptoData();
+            cryptoData = await fetchCryptoData();
             const list = document.getElementById('cryptoList');
             list.innerHTML = cryptoData.map(coin => `
+                <a href="${coin.link}" target="_blank" class="crypto-item">
+                    <img src="${coin.logo}" alt="${coin.name}">
+                    <span>${coin.name}</span>
+                    <span>${coin.price} USD</span>
+                </a>
+            `).join('');
+        }
+
+        function filterCryptos() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const filteredCoins = cryptoData.filter(coin => 
+                coin.name.toLowerCase().includes(searchTerm)
+            );
+            const list = document.getElementById('cryptoList');
+            list.innerHTML = filteredCoins.map(coin => `
                 <a href="${coin.link}" target="_blank" class="crypto-item">
                     <img src="${coin.logo}" alt="${coin.name}">
                     <span>${coin.name}</span>
@@ -108,9 +137,9 @@
             document.body.classList.toggle('light');
         }
 
-        Telegram.WebApp.ready();  // Готово
+        Telegram.WebApp.ready();
         renderCryptoList();
         setInterval(renderCryptoList, 60000); // Обновление каждую минуту
     </script>
 </body>
-</html>  
+</html>
