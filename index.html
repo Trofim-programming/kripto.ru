@@ -96,20 +96,29 @@
         let cryptoData = [];
 
         async function fetchCryptoData() {
-            const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-            const data = await response.json();
-            return data.map(coin => ({ 
-                name: coin.name, 
-                price: coin.current_price, 
-                logo: coin.image, 
-                link: `https://www.coingecko.com/en/coins/${coin.id}`
-            }));
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+                const data = await response.json();
+                return data.map(coin => ({ 
+                    name: coin.name, 
+                    price: coin.current_price, 
+                    logo: coin.image, 
+                    link: `https://www.coingecko.com/en/coins/${coin.id}`
+                }));
+            } catch (error) {
+                console.error("Ошибка при получении данных:", error);
+                return [];
+            }
         }
 
         async function renderCryptoList() {
             cryptoData = await fetchCryptoData();
+            updateCryptoList(cryptoData);
+        }
+
+        function updateCryptoList(coins) {
             const list = document.getElementById('cryptoList');
-            list.innerHTML = cryptoData.map(coin => `
+            list.innerHTML = coins.map(coin => `
                 <a href="${coin.link}" target="_blank" class="crypto-item">
                     <img src="${coin.logo}" alt="${coin.name}">
                     <span>${coin.name}</span>
@@ -123,14 +132,7 @@
             const filteredCoins = cryptoData.filter(coin => 
                 coin.name.toLowerCase().includes(searchTerm)
             );
-            const list = document.getElementById('cryptoList');
-            list.innerHTML = filteredCoins.map(coin => `
-                <a href="${coin.link}" target="_blank" class="crypto-item">
-                    <img src="${coin.logo}" alt="${coin.name}">
-                    <span>${coin.name}</span>
-                    <span>${coin.price} USD</span>
-                </a>
-            `).join('');
+            updateCryptoList(filteredCoins);
         }
 
         function toggleTheme() {
@@ -143,3 +145,4 @@
     </script>
 </body>
 </html>
+
